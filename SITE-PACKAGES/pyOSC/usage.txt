@@ -1,0 +1,79 @@
+###########
+#OSC Sender
+import OSC
+
+c = OSC.OSCClient()
+c.connect(('127.0.0.1', 12345)) 
+oscmsg = OSC.OSCMessage()
+oscmsg.setAddress("/startup")
+oscmsg.append('HELLO')
+c.send(oscmsg)
+
+
+######################
+#OSC Receiver Simple
+import OSC
+
+def handler(addr, tags, data, client_address):
+    txt = "OSCMessage '%s' from %s: " % (addr, client_address)
+    txt += str(data)
+    print(txt)
+
+if __name__ == "__main__":
+    s = OSC.OSCServer(('127.0.0.1', 57120))  # listen on localhost, port 57120
+    s.addMsgHandler('/startup', handler)     # call handler() for OSC messages received with the /startup address
+    s.serve_forever()
+
+
+######################
+#OSC Receiver Threaded
+import OSC
+import time, threading
+
+server = OSCServer( ("localhost", 12345) )
+s.addDefaultHandlers()
+
+def debug_handler(addr, tags, stuff, source):
+	print "---"
+	print "received new osc msg from %s" % OSC.getUrlStr(source)
+	print "with addr : %s" % addr
+	print "typetags %s" % tags
+	print "data %s" % stuff
+	msg = OSC.OSCMessage()
+	msg.setAddress(addr)
+	msg.append(stuff)
+	c.send(msg)
+	print "return message %s" % msg
+	print "---"
+
+def eyetech_handler(add, tags, stuff, source):
+	#do somthing
+
+s.addMsgHandler("/debug", defualt_handler)
+s.addMsgHandler("/eyetech", eyetech_handler)
+
+# List registered callback handlers
+print "Registered Callback-functions are :"
+for addr in s.getOSCAddressSpace():
+	print addr
+
+# Start OSCServer
+print "\nStarting OSCServe\n. Use ctrl-C to quit."
+st = threading.Thread( target = s.serve_forever )
+st.start()
+
+# Loop while threads are running.
+try :
+	while 1 :
+		time.sleep(10)
+
+except KeyboardInterrupt :
+	print "\nClosing OSCServer."
+	s.close()
+	print "Waiting for Server-thread to finish"
+	st.join()
+
+
+
+
+	print "Done"
